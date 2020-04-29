@@ -89,8 +89,8 @@ steps_per_epoch_validation =  n_data_validation//batch_size+1
 
 ### TRAINING_DATASET_SIZE=200840
 #TRAINING_DATASET_SIZE =200
-HEIGHT = 128
-WIDTH = 128
+HEIGHT = 512
+WIDTH = 512
 
 
 
