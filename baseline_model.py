@@ -83,8 +83,12 @@ MODELS_DIR = "models/"
 LOAD_MODEL = True
 DEBUG = False
 
-n_data_validation =N_FIT_DATA-n_data_train
+train_val_frac=0.8
+batch_size = 32
+n_data_train = int(train_val_frac*N_FIT_DATA)
+n_data_train
 
+n_data_validation =N_FIT_DATA-n_data_train
 steps_per_epoch_validation =  n_data_validation//batch_size+1
 
 ### TRAINING_DATASET_SIZE=200840
