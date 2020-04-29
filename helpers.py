@@ -16,11 +16,11 @@ import cv2 as cv
 from shapely.geometry import Polygon
 from shapely import wkt
 
-from keras import Sequential
-from keras.layers import Dense, Flatten, Input
-from keras.utils import plot_model
-from keras.models import Model
-from keras.callbacks import ModelCheckpoint, EarlyStopping, EarlyStopping, CSVLogger, TensorBoard, ReduceLROnPlateau
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense, Flatten, Input
+from tensorflow.keras.utils import plot_model
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, EarlyStopping, CSVLogger, TensorBoard, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 
 from typing import List, Tuple
@@ -33,13 +33,6 @@ TRAIN_SAR_PATH = TRAIN_COMMON_PATH/'SAR-Intensity'
 TRAIN_GT_PATH = TRAIN_COMMON_PATH/'train_ground_truth'
 TEST_SAR_PATH = None #TODO
 TEST_GT_PATH = None #TODO
-
-def get_id_from_filename(filename):
-    return FILENAME_PATTERN.match(filename)[1]
-
-def get_polygons_in_image(rstr_filename):
-    image_id = get_id_from_filename(rstr_filename)
-    return buildings.loc[buildings['ImageId']==image_id,'PolygonWKT_Pix']
 
 def preprocess_to_display(x, n_channels, normalize=True):
     preprocessed = x.copy()
@@ -58,9 +51,17 @@ def get_sar_imagery_statistics(path):
     return means, stds
 
 def get_array_from_tiff(path):
-    with rasterio.open(path) as file: 
-        im = file.read()
-    return im
+    with rasterio.open(path) as src: 
+        im = src.read()
+        tsm = src.transform
+    return im, tsm
+
+def get_id_from_filename(FILENAME_PATTERN, filename):
+    return FILENAME_PATTERN.match(filename)[1]
+
+def get_polygons_in_image(rstr_filename):
+    image_id = get_id_from_filename(rstr_filename)
+    return buildings.loc[buildings['ImageId']==image_id,'PolygonWKT_Pix']
 
 def create_raster_ground_truth(image_filename):
     
@@ -80,3 +81,4 @@ def create_raster_ground_truth(image_filename):
             burned = features.rasterize(shapes=shapes, fill=0, out=out_arr)
         out.write_band(1, burned)
     return burned
+
