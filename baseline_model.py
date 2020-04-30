@@ -70,7 +70,7 @@ N_FIT_DATA = 3401
 N_TRAIN = int(N_FIT_DATA*0.85)
 N_VALIDATION = N_FIT_DATA-N_TRAIN
 
-BATCH_SIZE = 32
+BATCH_SIZE = 1
 
 STEPS_PER_EPOCH = {}
 STEPS_PER_EPOCH['test'] = len(os.listdir('test_public/AOI_11_Rotterdam/SAR-Intensity'))//BATCH_SIZE+1
@@ -84,7 +84,7 @@ LOAD_MODEL = True
 DEBUG = False
 
 train_val_frac=0.8
-batch_size = 32
+batch_size = 8
 n_data_train = int(train_val_frac*N_FIT_DATA)
 n_data_train
 
@@ -93,8 +93,8 @@ steps_per_epoch_validation =  n_data_validation//batch_size+1
 
 ### TRAINING_DATASET_SIZE=200840
 #TRAINING_DATASET_SIZE =200
-HEIGHT = 512
-WIDTH = 512
+HEIGHT = 256
+WIDTH = 256
 
 
 
@@ -373,8 +373,8 @@ class SpaceNetPipeline:
             self.format_results(mode='test')
             self.save_results(mode='test')
             
-if __main__=='__name__':
-    sn_pipeline = SpaceNetPipeline(batch_size=32, train_val_frac = TRAIN_FRAC, 
+if __name__=='__main__':
+    sn_pipeline = SpaceNetPipeline(batch_size=batch_size, train_val_frac = TRAIN_FRAC, 
                                verbose=False, backbone = 'efficientnetb3')
     
     sn_pipeline.run_pipeline(
@@ -382,5 +382,5 @@ if __main__=='__name__':
                              predict_train = True,
                              predict_validation = True, 
                              predict_test = True, 
-                             weights_path='models/model_weights--efficientnetb3-21-0.1158--0.5424.hdf5'
+                             weights_path='models/model_weights--efficientnetb3-21-0.0781--0.5573.hdf5'
                             )
