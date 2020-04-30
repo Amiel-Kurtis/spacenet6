@@ -205,7 +205,7 @@ class SpaceNetPipeline:
         del y_resized
         return y_expanded
         
-    def flow(self, mode: str ="train", with_ground_truth = True, height: int =137,width: int =236):
+    def flow(self, mode: str ="train", with_ground_truth = True, height: int =137,width: int =236, with_augmentation=True):
         '''Run the generator '''
         c = 0
         self.transforms[mode] = []
@@ -232,14 +232,21 @@ class SpaceNetPipeline:
             
             if mode in ('train','validation'):
                 y_batch_processed = self.process_y_batch_list(y_batch_list)
+                if c ==0: 
+                    fig,ax = plt.subplots(2,2)
+                    ax = ax.ravel()
+                    ax[0].imshow(x_batch_processed[0,...]/x_batch_processed[0].max())
+                    ax[1].imshow(y_batch_processed[0,...,0])
+                if with_augmentation:
+                    data = {"image": x_batch_processed, "mask": y_batch_processed}
+                    augmented = augmentation(**data)
+                    x_batch_processed, y_batch_processed = augmented["image"], augmented["mask"]
+                if c ==0: 
+                    ax[2].imshow(x_batch_processed[0,...]/x_batch_processed[0].max())
+                    ax[3].imshow(y_batch_processed[0,...,0])
+                    plt.show()
                 #self.print_if_verbose(f"\n INFO - Yielding train data n°{c}/{self.batch_size/self.files_size['train']}")
                 yield x_batch_processed, y_batch_processed
-            else:
-                c+=1
-                if c % 10==0:
-                    print(f"\n INFO - Step n°{c} ")
-                #self.print_if_verbose(f"\n INFO - Yielding {mode} data n°{c}/{self.batch_size/self.files_size[mode]}")
-                yield x_batch_processed
             gc.collect()
     
     def get_callbacks(self):
