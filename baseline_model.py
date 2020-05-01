@@ -20,7 +20,7 @@ import rasterio
 from rasterio import features
 import geopandas as gpd
 from affine import Affine
-from rasterstats import gen_zonal_stats
+from rasterstats import gen_zonal_stats,zonal_stats
 
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Input
@@ -31,7 +31,8 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, EarlyStop
 import tensorflow as tf 
 from efficientnet import tfkeras as efn 
 import segmentation_models as sm
-from rasterstats import zonal_stats
+from albumentations import HorizontalFlip, VerticalFlip, Compose
+
 print(tf.__version__)
 print(sm.__version__)
 
@@ -97,6 +98,12 @@ HEIGHT = 256
 WIDTH = 256
 
 
+
+def strong_aug(p=0.5):
+    return Compose([
+        HorizontalFlip(),
+        VerticalFlip()],p=p)
+augmentation = strong_aug(p=0.9)
 
 class SpaceNetPipeline:
     def __init__(self, shuffle=False, batch_type='multiple_images',
